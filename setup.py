@@ -1,5 +1,5 @@
 import pathlib
-from setuptools import setup
+from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
@@ -20,7 +20,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Operating System :: OS Independent",
     ],
-    packages=setuptools.find_packages(exclude=["tests"]),
+    packages=find_packages(exclude=["tests"]),
     install_requires=["pydantic>=1.8.2", "PyYAML==6.0"],
     python_requires=">=3.7",
 )
