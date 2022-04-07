@@ -21,41 +21,17 @@ from typing import (
 )
 from urllib.parse import ParseResult
 from warnings import warn
-
 from pydantic import BaseModel, Field, root_validator, validator
 
-from datamodel_code_generator import (
-    InvalidClassNameError,
-    cached_property,
-    load_yaml,
-    load_yaml_from_path,
-    snooper_to_methods,
-)
-from datamodel_code_generator.format import PythonVersion
-from datamodel_code_generator.model import DataModel, DataModelFieldBase
-from datamodel_code_generator.model import pydantic as pydantic_model
-from datamodel_code_generator.model.base import get_module_name
-from datamodel_code_generator.model.enum import Enum
-from datamodel_code_generator.parser import DefaultPutDict, LiteralType
-from datamodel_code_generator.parser.base import (
-    Parser,
-    escape_characters,
-    title_to_class_name,
-)
-from datamodel_code_generator.reference import ModelType, Reference, is_url
-from datamodel_code_generator.types import DataType, DataTypeManager, StrictTypes, Types
+SPECIAL_PATH_FORMAT: str = '#-special-path-#-{}-#-special-#'
 
-
+"""
 def get_model_by_path(schema: Dict[str, Any], keys: List[str]) -> Dict[str, Any]:
     if not keys:
         return schema
     elif len(keys) == 1:
         return schema.get(keys[0], {})
     return get_model_by_path(schema[keys[0]], keys[1:])
-
-
-SPECIAL_PATH_FORMAT: str = '#-datamodel-code-generator-#-{}-#-special-#'
-
 
 def get_special_path(keyword: str, path: List[str]) -> List[str]:
     return [*path, SPECIAL_PATH_FORMAT.format(keyword)]
@@ -104,7 +80,18 @@ json_schema_data_formats: Dict[str, Dict[str, Types]] = {
     'null': {'default': Types.null},
     'array': {'default': Types.array},
 }
+"""
 
+class cached_property:
+    def __init__(self, func: Callable) -> None:
+        self.func: Callable = func
+        self.__doc__: Any = func.__doc__
+
+    def __get__(self, instance: Any, owner: Any = None) -> Any:
+        value = instance.__dict__.get(self.func.__name__, _NOT_FOUND)
+        if value is _NOT_FOUND:  # pragma: no cover
+            value = instance.__dict__[self.func.__name__] = self.func(instance)
+        return value
 
 class JSONReference(_enum.Enum):
     LOCAL = 'LOCAL'
@@ -237,7 +224,7 @@ class JsonSchemaObject(BaseModel):
             return get_ref_type(self.ref)
         return None  # pragma: no cover
 
-
+"""
 @lru_cache()
 def get_ref_type(ref: str) -> JSONReference:
     if ref[0] == '#':
@@ -248,6 +235,7 @@ def get_ref_type(ref: str) -> JSONReference:
 
 
 JsonSchemaObject.update_forward_refs()
+"""
 
 DEFAULT_FIELD_KEYS: Set[str] = {
     'example',
@@ -262,7 +250,7 @@ EXCLUDE_FIELD_KEYS = (set(JsonSchemaObject.__fields__) - DEFAULT_FIELD_KEYS) | {
     JsonSchemaObject.__extra_key__,
 }
 
-
+"""
 @snooper_to_methods(max_variable_length=None)
 class JsonSchemaParser(Parser):
     def __init__(
@@ -1123,71 +1111,6 @@ class JsonSchemaParser(Parser):
         yield
         self.root_id = previous_root_id
 
-    def parse_raw_obj(
-        self,
-        name: str,
-        raw: Dict[str, Any],
-        path: List[str],
-    ) -> None:
-        self.parse_obj(name, JsonSchemaObject.parse_obj(raw), path)
-
-    def parse_obj(
-        self,
-        name: str,
-        obj: JsonSchemaObject,
-        path: List[str],
-    ) -> None:
-        if obj.is_array:
-            self.parse_array(name, obj, path)
-        elif obj.allOf:
-            self.parse_all_of(name, obj, path)
-        elif obj.oneOf:
-            self.parse_root_type(name, obj, path)
-        elif obj.is_object:
-            self.parse_object(name, obj, path)
-        elif obj.enum:
-            self.parse_enum(name, obj, path)
-        else:
-            self.parse_root_type(name, obj, path)
-        self.parse_ref(obj, path)
-
-    def parse_raw(self) -> None:
-        if isinstance(self.source, list) or (
-            isinstance(self.source, Path) and self.source.is_dir()
-        ):
-            self.current_source_path = Path()
-            self.model_resolver.after_load_files = {
-                self.base_path.joinpath(s.path).resolve().as_posix()
-                for s in self.iter_source
-            }
-
-        for source in self.iter_source:
-            if isinstance(self.source, ParseResult):
-                path_parts = self.get_url_path_parts(self.source)
-            else:
-                path_parts = list(source.path.parts)
-            if self.current_source_path is not None:
-                self.current_source_path = source.path
-            with self.model_resolver.current_base_path_context(
-                source.path.parent
-            ), self.model_resolver.current_root_context(path_parts):
-                self.raw_obj = load_yaml(source.text)
-                if self.custom_class_name_generator:
-                    obj_name = self.raw_obj.get('title', 'Model')
-                else:
-                    if self.class_name:
-                        obj_name = self.class_name
-                    else:
-                        # backward compatible
-                        obj_name = self.raw_obj.get('title', 'Model')
-                        if not self.model_resolver.validate_name(obj_name):
-                            obj_name = title_to_class_name(obj_name)
-                    if not self.model_resolver.validate_name(obj_name):
-                        raise InvalidClassNameError(obj_name)
-                self._parse_file(self.raw_obj, obj_name, path_parts)
-
-        self._resolve_unparsed_json_pointer()
-
     def _resolve_unparsed_json_pointer(self) -> None:
         model_count: int = len(self.results)
         for source in self.iter_source:
@@ -1212,73 +1135,4 @@ class JsonSchemaParser(Parser):
             # New model have been generated. It try to resolve json pointer again.
             self._resolve_unparsed_json_pointer()
 
-    def parse_json_pointer(
-        self, raw: Dict[str, Any], ref: str, path_parts: List[str]
-    ) -> None:
-        path = ref.split('#', 1)[-1]
-        if path[0] == '/':  # pragma: no cover
-            path = path[1:]
-        object_paths = path.split('/')
-        models = get_model_by_path(raw, object_paths)
-        model_name = object_paths[-1]
-
-        self.parse_raw_obj(
-            model_name, models, [*path_parts, f'#/{object_paths[0]}', *object_paths[1:]]
-        )
-
-    def _parse_file(
-        self,
-        raw: Dict[str, Any],
-        obj_name: str,
-        path_parts: List[str],
-        object_paths: Optional[List[str]] = None,
-    ) -> None:
-        object_paths = [o for o in object_paths or [] if o]
-        if object_paths:
-            path = [*path_parts, f'#/{object_paths[0]}', *object_paths[1:]]
-        else:
-            path = path_parts
-        with self.model_resolver.current_root_context(path_parts):
-            obj_name = self.model_resolver.add(
-                path, obj_name, unique=False, class_name=True
-            ).name
-            with self.root_id_context(raw):
-
-                # parse $id before parsing $ref
-                root_obj = JsonSchemaObject.parse_obj(raw)
-                self.parse_id(root_obj, path_parts)
-                definitions = raw.get('definitions', {})
-                for key, model in definitions.items():
-                    obj = JsonSchemaObject.parse_obj(model)
-                    self.parse_id(obj, [*path_parts, '#/definitions', key])
-
-                if object_paths:
-                    models = get_model_by_path(raw, object_paths)
-                    model_name = object_paths[-1]
-                    self.parse_obj(model_name, JsonSchemaObject.parse_obj(models), path)
-                else:
-                    self.parse_obj(obj_name, root_obj, path_parts or ['#'])
-                for key, model in definitions.items():
-                    path = [*path_parts, '#/definitions', key]
-                    reference = self.model_resolver.get(path)
-                    if not reference or not reference.loaded:
-                        self.parse_raw_obj(key, model, path)
-
-                key = tuple(path_parts)
-                reserved_refs = set(self.reserved_refs.get(key) or [])
-                while reserved_refs:
-                    for reserved_path in sorted(reserved_refs):
-                        reference = self.model_resolver.get(reserved_path)
-                        if not reference or reference.loaded:
-                            continue
-                        path = reserved_path.split('/')
-                        _, *object_paths = path
-                        models = get_model_by_path(raw, object_paths)
-                        model_name = object_paths[-1]
-                        self.parse_obj(
-                            model_name, JsonSchemaObject.parse_obj(models), path
-                        )
-                    previous_reserved_refs = reserved_refs
-                    reserved_refs = set(self.reserved_refs.get(key) or [])
-                    if previous_reserved_refs == reserved_refs:
-                        break
+"""

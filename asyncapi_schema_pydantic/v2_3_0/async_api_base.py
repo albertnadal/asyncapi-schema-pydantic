@@ -12,7 +12,7 @@ from .channel import ChannelItem, ChannelUri
 from .tag import Tag
 
 
-class AsyncAPI(BaseModel):
+class AsyncAPIBase(BaseModel):
     """This is the root document object of the AsyncAPI document."""
 
     asyncapi: str = "2.3.0"

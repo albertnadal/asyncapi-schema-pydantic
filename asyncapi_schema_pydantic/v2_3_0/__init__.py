@@ -4,6 +4,7 @@ https://github.com/asyncapi/spec/blob/master/spec/asyncapi.md
 """
 
 from .async_api import AsyncAPI
+from .async_api_base import AsyncAPIBase
 from .info import Info
 from .contact import Contact
 from .license import License
