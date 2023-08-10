@@ -7,7 +7,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="asyncapi-schema-pydantic",
-    version="1.0.0",
+    version="1.0.1",
     description="AsyncAPI (v2) specification schema as pydantic class",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -21,6 +21,6 @@ setup(
         "Operating System :: OS Independent",
     ],
     packages=find_packages(exclude=["tests"]),
-    install_requires=["pydantic>=1.8.2", "PyYAML==6.0"],
+    install_requires=["pydantic>=1.8.2", "PyYAML~=6.0"],
     python_requires=">=3.7",
 )
