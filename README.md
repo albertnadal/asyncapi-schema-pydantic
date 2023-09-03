@@ -1,5 +1,7 @@
 # asyncapi-schema-pydantic
 
+[![pypi](https://img.shields.io/pypi/v/asyncapi-schema-pydantic.svg)](https://pypi.python.org/pypi/asyncapi-schema-pydantic)
+
 AsyncAPI (v2) specification schema as [Pydantic](https://github.com/samuelcolvin/pydantic) classes.
 
 The naming of the classes follows the schema in 
