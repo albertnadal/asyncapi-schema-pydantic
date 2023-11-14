@@ -194,7 +194,7 @@ class AmqpOperationBinding(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                 {
                     "channels": {

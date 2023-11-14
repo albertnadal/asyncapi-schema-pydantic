@@ -8,7 +8,7 @@ class AsyncAPI(AsyncAPIBase):
     def load_from_file(filename):
         unresolved_data = AsyncAPI.load_data_from_file(filename)
         data = AsyncAPI.resolve_external_references(unresolved_data, os.path.dirname(filename))
-        return AsyncAPI.parse_obj(data)
+        return AsyncAPI.model_validate(data)
 
     @staticmethod
     def load_data_from_file(filename):

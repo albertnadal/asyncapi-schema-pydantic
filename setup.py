@@ -21,6 +21,6 @@ setup(
         "Operating System :: OS Independent",
     ],
     packages=find_packages(exclude=["tests"]),
-    install_requires=["pydantic>=1.8.2", "PyYAML~=6.0"],
+    install_requires=["pydantic>=2.0.0", "PyYAML~=6.0"],
     python_requires=">=3.7",
 )
