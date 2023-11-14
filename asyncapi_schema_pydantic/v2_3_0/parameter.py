@@ -6,7 +6,7 @@ from .reference import Reference
 from .schema import Schema
 
 
-ParameterName = constr(regex=r"^[A-Za-z0-9_\-]+$")
+ParameterName = constr(pattern=r"^[A-Za-z0-9_\-]+$")
 
 
 class Parameter(BaseModel):
@@ -33,7 +33,7 @@ class Parameter(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                             {
                                 "user/{userId}/signup": {

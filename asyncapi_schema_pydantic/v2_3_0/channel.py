@@ -7,13 +7,13 @@ from .channel_bindings import ChannelBindings
 from .operation import Operation
 from .parameter import Parameter, ParameterName
 
-ChannelUri = constr(regex=r"^([^\x00-\x20\x7f\"'%<>\\^`{|}]|%[0-9A-Fa-f]{2}|{[+#./;?&=,!@|]?((\w|%[0-9A-Fa-f]{2})(\.?(\w|%[0-9A-Fa-f]{2}))*(:[1-9]\d{0,3}|\*)?)(,((\w|%[0-9A-Fa-f]{2})(\.?(\w|%[0-9A-Fa-f]{2}))*(:[1-9]\d{0,3}|\*)?))*})*$")
+ChannelUri = constr(pattern=r"^([^\x00-\x20\x7f\"'%<>\\^`{|}]|%[0-9A-Fa-f]{2}|{[+#./;?&=,!@|]?((\w|%[0-9A-Fa-f]{2})(\.?(\w|%[0-9A-Fa-f]{2}))*(:[1-9]\d{0,3}|\*)?)(,((\w|%[0-9A-Fa-f]{2})(\.?(\w|%[0-9A-Fa-f]{2}))*(:[1-9]\d{0,3}|\*)?))*})*$")
 
 
 class ChannelItem(BaseModel):
     """Describes the operations available on a single channel."""
 
-    ref: Optional[str] = Field(alias="$ref")
+    ref: Optional[str] = Field(default=None, alias="$ref")
     """
     Allows for an external definition of this channel item. The referenced structure
     MUST be in the format of a Channel Item Object. If there are conflicts between the
@@ -63,7 +63,8 @@ class ChannelItem(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        regex_engine = 'python-re'
+        json_schema_extra = {
             "examples": [
                             {
                                 "description": "This channel is used to exchange messages about users signing up",

@@ -7,7 +7,7 @@ from .server_bindings import ServerBindings
 from .security_requirement import SecurityRequirement
 from .server_variable import ServerVariable
 
-ServerIdentifier = constr(regex=r'^[A-Za-z0-9_\-]+$')
+ServerIdentifier = constr(pattern=r'^[A-Za-z0-9_\-]+$')
 
 
 class Server(BaseModel):
@@ -59,7 +59,7 @@ class Server(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                             {
                                 "url": "development.gigantic-server.com",

@@ -65,7 +65,7 @@ async_api = AsyncAPI(
     }
 )
 
-print(async_api.json(by_alias=True, exclude_none=True, indent=2))
+print(async_api.model_dump_json(by_alias=True, exclude_none=True, indent=2))
 ```
 
 Result:
@@ -128,7 +128,7 @@ The following examples give the same AsyncAPI result as above:
 from asyncapi_schema_pydantic import AsyncAPI, ChannelItem, Operation
 
 # Construct AsyncAPI from dict
-async_api = AsyncAPI.parse_obj({
+async_api = AsyncAPI.model_validate({
   "asyncapi": "2.3.0",
   "info": {
     "title": "Email Service",
@@ -153,7 +153,7 @@ async_api = AsyncAPI.parse_obj({
 })
 
 # Construct AsyncAPI with mix of dict/object
-async_api = AsyncAPI.parse_obj({
+async_api = AsyncAPI.model_validate({
   "asyncapi": "2.3.0",
   "info": {
     "title": "Email Service",
