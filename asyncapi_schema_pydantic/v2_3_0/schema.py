@@ -43,7 +43,7 @@ class Schema(JsonSchemaObject):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                 {
                     "type": "string",
