@@ -32,7 +32,7 @@ class OAuthFlow(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                             {
                               "type": "oauth2",

@@ -23,7 +23,7 @@ class ExternalDocumentation(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                 {
                     "description": "Find more info here",

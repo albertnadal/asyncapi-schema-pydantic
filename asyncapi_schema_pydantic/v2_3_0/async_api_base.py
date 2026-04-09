@@ -84,3 +84,4 @@ class AsyncAPIBase(BaseModel):
 
     class Config:
         extra = Extra.forbid
+        regex_engine = 'python-re'

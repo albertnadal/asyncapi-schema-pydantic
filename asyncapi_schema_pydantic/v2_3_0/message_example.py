@@ -35,7 +35,7 @@ class MessageExample(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                 {
                     "name": "SimpleSignup",
@@ -102,7 +102,7 @@ class IbmMqServerBinding(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                 {
                     "servers": {

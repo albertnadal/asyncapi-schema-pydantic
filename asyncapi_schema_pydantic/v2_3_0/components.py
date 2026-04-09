@@ -18,7 +18,7 @@ from .operation_bindings import OperationBindings
 from .message_bindings import MessageBindings
 
 
-ComponentKey = constr(regex=r"^[A-Za-z0-9_\-]+$")
+ComponentKey = constr(pattern=r"^[A-Za-z0-9_\-]+$")
 
 
 class Components(BaseModel):
@@ -96,7 +96,7 @@ class Components(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                             {
                             "components": {

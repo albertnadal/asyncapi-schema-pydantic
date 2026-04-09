@@ -54,7 +54,7 @@ class MqttOperationBinding(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                 {
                     "channels": {
@@ -140,7 +140,7 @@ class MqttServerBinding(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                 {
                     "servers": {

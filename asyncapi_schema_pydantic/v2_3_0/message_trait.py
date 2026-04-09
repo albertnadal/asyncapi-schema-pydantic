@@ -89,7 +89,7 @@ class MessageTrait(BaseModel):
 
     class Config:
         extra = Extra.forbid
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                             {
                                 "schemaFormat": "application/vnd.apache.avro+json;version=1.9.0",
